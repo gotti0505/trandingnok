@@ -1,0 +1,23 @@
+# QuantSaaS Cursor Rules
+
+## 唯一功能真源
+功能實現只依據 docs/ 下三份文檔（系統總體拓撲結構 / 策略數學引擎 / 進化計算引擎）。文檔未定義的功能不進入實現。
+
+## 工作順序
+- 策略/回測相關 → 先讀 docs/策略數學引擎.md 確認公式
+- Go 後端 → GORM Code-First，只用 AutoMigrate，不寫 SQL migration
+- 價格計算 → 優先無量綱（對數收益率/比率），禁止絕對價格跨標的比較
+- 架構調整 → 保持 SaaS-Strategy-Agent 三端分工，不做預防性解耦
+
+## 五條鐵律（違反即停）
+1. 策略必須滿足複利前置條件（DeadBTC 只進不出，ReserveFloor 不動用）
+2. 回測與實盤調用同一 Step()，禁止 if isBacktest 分支
+3. Step() 只在 SaaS 側執行，Agent 端無策略代碼
+4. internal/strategies/ 內部禁止網路/資料庫/文件 I/O
+5. API Key 只在 config.agent.yaml，永不進入 SaaS 代碼或 DB
+
+## 代碼生成規範
+- Go：GORM struct 加 json/gorm tag；錯誤用 fmt.Errorf("func: %w", err) 包裝
+- 新增功能前確認三份 docs 是否有對應定義
+- 不寫預防性代碼，不引入文檔未定義的抽象層
+- 測試文件與被測文件同包（_test.go）

@@ -1,0 +1,24 @@
+# Go binaries
+/bin/
+*.exe
+
+# Go build cache
+/vendor/
+
+# Sensitive config — NEVER commit
+config/config.agent.yaml
+config/*.local.yaml
+*.env
+.env*
+
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
