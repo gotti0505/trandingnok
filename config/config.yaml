@@ -1,0 +1,33 @@
+# QuantSaaS — SaaS cloud service configuration template
+# Sensitive fields are left blank; inject via environment variables:
+#   DB_PASSWORD   — Postgres password
+#   REDIS_PASSWORD — Redis password (leave blank if none)
+#   JWT_SECRET    — HS256 signing secret (min 32 chars in production)
+#
+# app_role: saas  → production cloud service (no GA tasks)
+# app_role: lab   → local compute node (GA + backtest only, no real trade dispatch)
+# app_role: dev   → local development (all capabilities enabled)
+
+app_role: saas
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "quantsaas"
+  password: ""       # inject via env: DB_PASSWORD
+  name: "quantsaas"
+  ssl_mode: "disable"
+
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""       # inject via env: REDIS_PASSWORD
+  db: 0
+
+jwt:
+  secret: ""         # inject via env: JWT_SECRET
+  ttl: "24h"

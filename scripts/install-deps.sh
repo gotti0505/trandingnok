@@ -15,7 +15,8 @@ go get gorm.io/driver/postgres@latest
 go get github.com/redis/go-redis/v9@latest
 go get github.com/golang-jwt/jwt/v5@latest
 go get github.com/robfig/cron/v3@latest
-go.uber.org/zap@latest
+go get go.uber.org/zap@latest
+go get gopkg.in/yaml.v3@latest
 go get github.com/gorilla/websocket@latest
 go get github.com/stretchr/testify@latest
 
