@@ -6,6 +6,7 @@
 /vendor/
 
 # Sensitive config — NEVER commit
+config.agent.yaml
 config/config.agent.yaml
 config/*.local.yaml
 *.env
