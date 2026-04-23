@@ -12,6 +12,7 @@ type StrategyInput struct {
 	Portfolio  quant.PortfolioState
 	Runtime    quant.RuntimeState
 	Params     quant.Chromosome
+	SpawnPoint quant.SpawnPoint // birth-time params — GA never evolves these
 }
 
 // StrategyOutput is the pure decision produced by Step().
