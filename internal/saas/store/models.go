@@ -27,13 +27,14 @@ type StrategyTemplate struct {
 }
 
 // StrategyInstance binds a template to a user + symbol + fund allocation.
-// Status transitions: STOPPED → RUNNING → STOPPED | ERROR
+// Status transitions: STOPPED → RUNNING → STOPPED | ERROR; any → DELETED
 type StrategyInstance struct {
 	gorm.Model
 	UserID     uint   `gorm:"not null;index"`
 	TemplateID uint   `gorm:"not null;index"`
 	Symbol     string `gorm:"not null"`
-	Status     string `gorm:"not null;default:'STOPPED'"` // RUNNING / STOPPED / ERROR
+	Interval   string `gorm:"not null;default:'1min'"` // candle aggregation period for Tick
+	Status     string `gorm:"not null;default:'STOPPED'"` // RUNNING / STOPPED / ERROR / DELETED
 	ParamPack  string `gorm:"type:jsonb;not null;default:'{}'"`
 
 	User     User             `gorm:"foreignKey:UserID"`
@@ -107,21 +108,26 @@ type AuditLog struct {
 // Role lifecycle: challenger → champion (after human approval) → retired
 type GeneRecord struct {
 	gorm.Model
-	StrategyID  uint    `gorm:"not null;index"`
-	Role        string  `gorm:"not null"` // challenger / champion / retired
-	ParamPack   string  `gorm:"type:jsonb;not null"`
-	ScoreTotal  float64 `gorm:"not null;default:0"`
-	MaxDrawdown float64 `gorm:"not null;default:0"`
+	StrategyID   uint    `gorm:"not null;index"`
+	TaskID       uint    `gorm:"index"` // FK to EvolutionTask that produced this record
+	Role         string  `gorm:"not null"` // challenger / champion / retired
+	ParamPack    string  `gorm:"type:jsonb;not null"`
+	ScoreTotal   float64 `gorm:"not null;default:0"`
+	MaxDrawdown  float64 `gorm:"not null;default:0"`
+	WindowScores string  `gorm:"type:jsonb;not null;default:'{}'"`
 }
 
 // EvolutionTask represents one GA run.
 // Status: pending → running → done | failed
 type EvolutionTask struct {
 	gorm.Model
-	StrategyID uint    `gorm:"not null;index"`
-	Status     string  `gorm:"not null;default:'pending'"` // pending / running / done / failed
-	Progress   float64 `gorm:"not null;default:0"`
-	Config     string  `gorm:"type:jsonb;not null;default:'{}'"`
+	StrategyID        uint    `gorm:"not null;index"`
+	Status            string  `gorm:"not null;default:'pending'"` // pending / running / done / failed
+	Progress          float64 `gorm:"not null;default:0"`
+	CurrentGeneration int     `gorm:"not null;default:0"`
+	BestScore         float64 `gorm:"not null;default:0"`
+	ErrorMsg          string  `gorm:"type:text;not null;default:''"`
+	Config            string  `gorm:"type:jsonb;not null;default:'{}'"`
 }
 
 // KLine stores historical OHLCV bars.
